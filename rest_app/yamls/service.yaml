@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rickandmorty-service
+  labels:
+    app: rickandmorty
+spec:
+  type: LoadBalancer
+  selector:
+    app: rickandmorty
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5010
