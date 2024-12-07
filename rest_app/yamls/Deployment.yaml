@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: rickandmorty
-        image: my-rick-and-morty-app:latest
+        image: matanm66/rickandmorty:v1.0
         ports:
         - containerPort: 5010
