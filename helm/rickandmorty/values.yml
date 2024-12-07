@@ -1,0 +1,26 @@
+replicaCount: 2
+
+image:
+  repository: matanm66/rickandmorty
+  tag: v1.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 5010
+
+ingress:
+  enabled: true
+  className: nginx
+  host: "rickandmorty.local"
+
+resources: {}
+# Example:
+# resources:
+#   requests:
+#     memory: "256Mi"
+#     cpu: "100m"
+#   limits:
+#     memory: "512Mi"
+#     cpu: "200m"

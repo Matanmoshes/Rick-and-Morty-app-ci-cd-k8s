@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rickandmorty.fullname" . }}
+  labels:
+    app: {{ include "rickandmorty.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "rickandmorty.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "rickandmorty.name" . }}
+    spec:
+      containers:
+      - name: rickandmorty
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.service.targetPort }}
+        resources:
+{{- toYaml .Values.resources | nindent 10 }}

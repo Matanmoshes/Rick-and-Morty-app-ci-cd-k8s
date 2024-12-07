@@ -1,0 +1,22 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "rickandmorty.fullname" . }}
+  labels:
+    app: {{ include "rickandmorty.name" . }}
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.className }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "rickandmorty.fullname" . }}
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}
