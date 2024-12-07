@@ -1,5 +1,14 @@
-### README.md
-## Description
+# Rick and Morty App
+
+## Description 
+This project is devide to four section
+1. Rick and Morty Rest API app
+2. Running the app on K8S
+3. Helm chart for the Rick and Morty app
+
+---
+
+## Rick and Morty Rest API app
 This application queries the Rick and Morty API at startup to find all characters who are:
 - Species: Human
 - Status: Alive
