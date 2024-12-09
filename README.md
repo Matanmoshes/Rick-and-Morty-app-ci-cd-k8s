@@ -206,8 +206,6 @@ NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
 metallb-webhook-service ClusterIP   10.96.0.1       <none>        443/TCP   10m
 ```
 
-
-
 ## Manifests
 The `yamls` directory contains the following files:
 

@@ -1,5 +1,5 @@
 {{- define "rickandmorty.name" -}}
-{{ include "chart.name" . }}
+{{ .Chart.Name }}
 {{- end -}}
 
 {{- define "rickandmorty.fullname" -}}
