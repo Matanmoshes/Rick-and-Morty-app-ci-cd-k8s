@@ -28,6 +28,9 @@ helm/
    - Create a LoadBalancer Service.
    - Create an Ingress resource if ingress is enabled.
 
+<img width="1385" alt="image" src="https://github.com/user-attachments/assets/e31ee056-db2c-4583-902f-ebb4a10323f1">
+
+
 4. **Check the resources**:
    ```bash
    kubectl get deployments
@@ -56,6 +59,7 @@ helm/
      ```
    
    You should see the JSON responses from the application.
+<img width="1397" alt="image" src="https://github.com/user-attachments/assets/564607cf-1bd5-4fe1-b0c3-e0ac43a56a32">
 
 
 **Note:**  
