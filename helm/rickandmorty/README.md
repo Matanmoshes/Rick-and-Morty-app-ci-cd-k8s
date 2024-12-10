@@ -28,7 +28,7 @@ helm/
    - Create a LoadBalancer Service.
    - Create an Ingress resource if ingress is enabled.
 
-<img width="1385" alt="image" src="https://github.com/user-attachments/assets/e31ee056-db2c-4583-902f-ebb4a10323f1">
+<img width="1387" alt="image" src="https://github.com/user-attachments/assets/7f4ef9ab-b4e3-4ba0-a294-ff08eaf10bd5">
 
 
 4. **Check the resources**:
