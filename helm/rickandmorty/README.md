@@ -57,6 +57,7 @@ helm/
    
    You should see the JSON responses from the application.
 
+
 **Note:**  
 - If you don’t have a LoadBalancer (e.g., running in a local environment without MetalLB or cloud LB), you might want to set `service.type` to `NodePort` and access via the node’s IP and nodePort.
 - Make sure `ingress.className` matches the installed Ingress Controller. For NGINX ingress, `nginx` is correct. If you’re using another controller, adjust accordingly.
