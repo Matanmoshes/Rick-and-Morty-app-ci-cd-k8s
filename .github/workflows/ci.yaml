@@ -14,9 +14,8 @@ jobs:
         uses: medyagh/setup-minikube@v0.0.18
         with:
           driver: docker
-          # This sets up a running minikube cluster
 
-      # Step 2: Install kubectl and helm using action-setup-kube-tools
+      # Step 2: Install kubectl and helm
       - name: Install kubectl and helm
         uses: yokawasa/action-setup-kube-tools@v0.11.2
         with:
@@ -26,46 +25,43 @@ jobs:
           kubectl: '1.25.0'
           helm: '3.11.1'
 
-      # Step 3: Enable NGINX Ingress addon in minikube
+      # Step 3: Enable NGINX Ingress addon in Minikube
       - name: Enable Ingress Addon
         run: minikube addons enable ingress
 
-      # Wait for ingress controller to be running
+      # Step 4: Wait for Ingress Controller to be ready
       - name: Wait for Ingress Controller Pods
         run: |
-          # Wait until the ingress controller pod is up (usually in 'ingress-nginx' namespace)
+          # Wait for CoreDNS to be ready
           kubectl wait --namespace kube-system \
             --for=condition=ready pod \
             --selector=k8s-app=kube-dns \
             --timeout=90s
-          # Wait specifically for ingress-nginx-controller to appear in 'ingress-nginx'
-          # Usually, after enabling ingress, minikube installs ingress-nginx in 'ingress-nginx' namespace
+
+          # Wait for ingress-nginx-controller to be ready
           kubectl wait --namespace ingress-nginx \
             --for=condition=ready pod \
             --selector=app.kubernetes.io/component=controller \
             --timeout=180s
 
-      # Step 4: Deploy the application using Helm
-      # If your chart is at helm/rickandmorty, adjust the path as needed.
+      # Step 5: Deploy the application using Helm
       - name: Helm install application
         run: helm install rickandmorty ./helm/rickandmorty --wait
 
-      # Step 5: List services (just for debugging)
+      # Step 6: List services (for debugging)
       - name: Get services
         run: kubectl get svc --all-namespaces
 
-      # Step 6: Port-forward the ingress controller service to test ingress locally
-      # Ingress Controller typically listens on port 80 for HTTP traffic.
+      # Step 7: Port-forward the ingress controller service
       - name: Port forward ingress
         run: kubectl port-forward -n ingress-nginx svc/ingress-nginx-controller 8080:80 &
       
       - name: Sleep
         run: sleep 10
 
-      # Step 7: Test the application endpoints via Ingress
-      # Since we can't modify /etc/hosts in GitHub Actions, we use the -H "Host: rickandmorty.local" header.
+      # Step 8: Test endpoints via Ingress
       - name: Test healthcheck endpoint
-        run: curl -f -H "Host: rickandmorty.local" http://localhost:8080/healthcheck
+        run: 'curl -f -H "Host: rickandmorty.local" http://localhost:8080/healthcheck'
 
       - name: Test characters endpoint
-        run: curl -f -H "Host: rickandmorty.local" http://localhost:8080/characters
+        run: 'curl -f -H "Host: rickandmorty.local" http://localhost:8080/characters'
