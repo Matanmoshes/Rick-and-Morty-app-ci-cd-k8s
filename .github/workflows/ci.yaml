@@ -9,7 +9,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 1: Set up Minikube cluster
+      # Step 1: Set up a Minikube cluster on the runner
       - name: Setup minikube
         uses: medyagh/setup-minikube@v0.0.18
         with:
@@ -25,43 +25,51 @@ jobs:
           kubectl: '1.25.0'
           helm: '3.11.1'
 
-      # Step 3: Enable NGINX Ingress addon in Minikube
+      # Step 3: Enable the NGINX Ingress addon
       - name: Enable Ingress Addon
         run: minikube addons enable ingress
 
-      # Step 4: Wait for Ingress Controller to be ready
-      - name: Wait for Ingress Controller Pods
+      # Step 4: Wait for ingress controller to be ready
+      # The ingress-nginx-controller runs in the 'ingress-nginx' namespace
+      - name: Wait for Ingress Controller
         run: |
-          # Wait for CoreDNS to be ready
+          # Wait until kube-dns is ready (often required before ingress)
           kubectl wait --namespace kube-system \
             --for=condition=ready pod \
             --selector=k8s-app=kube-dns \
-            --timeout=90s
+            --timeout=180s
 
-          # Wait for ingress-nginx-controller to be ready
+          # Wait for ingress-nginx-controller pod
           kubectl wait --namespace ingress-nginx \
             --for=condition=ready pod \
             --selector=app.kubernetes.io/component=controller \
-            --timeout=180s
+            --timeout=300s
 
-      # Step 5: Deploy the application using Helm
+      # Step 5: Deploy the Helm chart with ingress enabled
+      # Adjust path and values according to your chart structure.
+      # Ensure your chart supports enabling ingress via values.
       - name: Helm install application
-        run: helm install rickandmorty ./helm/rickandmorty --wait
+        run: helm install rickandmorty ./helm/rickandmorty --set ingress.enabled=true --wait --timeout 300s
 
-      # Step 6: List services (for debugging)
+      # Step 6: Get services and ingress info for debugging
       - name: Get services
         run: kubectl get svc --all-namespaces
 
-      # Step 7: Port-forward the ingress controller service
-      - name: Port forward ingress
-        run: kubectl port-forward -n ingress-nginx svc/ingress-nginx-controller 8080:80 &
-      
+      - name: Get ingress
+        run: kubectl get ingress --all-namespaces
+
+      # Step 7: Retrieve minikube IP for testing ingress
+      - name: Get minikube IP
+        id: mkip
+        run: echo "::set-output name=ip::$(minikube ip)"
+
       - name: Sleep
         run: sleep 10
 
-      # Step 8: Test endpoints via Ingress
-      - name: Test healthcheck endpoint
-        run: 'curl -f -H "Host: rickandmorty.local" http://localhost:8080/healthcheck'
+      # Step 8: Test endpoints via Ingress using curl --resolve
+      # Assuming your ingress host is set to "hello-world.example" in the Helm chart
+      - name: Test healthcheck endpoint via Ingress
+        run: curl -f --resolve "hello-world.example:80:${{ steps.mkip.outputs.ip }}" http://hello-world.example/healthcheck
 
-      - name: Test characters endpoint
-        run: 'curl -f -H "Host: rickandmorty.local" http://localhost:8080/characters'
+      - name: Test characters endpoint via Ingress
+        run: curl -f --resolve "hello-world.example:80:${{ steps.mkip.outputs.ip }}" http://hello-world.example/characters
