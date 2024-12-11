@@ -9,49 +9,41 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 1: Set up a local Kubernetes cluster (minikube) on the GitHub Actions runner
+      # Start a minikube cluster
       - name: Setup minikube
         uses: medyagh/setup-minikube@v0.0.18
         with:
           driver: docker
-          # By default, it will start a cluster and set KUBECONFIG
 
-      # Step 2: Install K8s tools (kubectl, helm)
+      # Install kubectl and helm, use a fully-qualified kubectl version
       - name: Install kubectl and helm
         uses: yokawasa/action-setup-kube-tools@v0.11.2
         with:
           setup-tools: |
             kubectl
             helm
-          kubectl: '1.25'
+          kubectl: '1.25.0'
           helm: '3.11.1'
 
-      # Step 3: Verify cluster status
+      # Verify cluster
       - name: Check cluster pods
         run: kubectl get pods --all-namespaces
 
-      # Step 4: Deploy the application using Helm
-      # Assuming your helm chart is in ./helm/rickandmorty directory
+      # Deploy the application via Helm
       - name: Helm install
         run: helm install rickandmorty ./helm/rickandmorty --wait
 
-      # Step 5: Wait for LoadBalancer/Ingress (in a real scenario you might set up Ingress or NodePort)
-      # Since minikube with 'docker' driver doesn't provide a real load balancer, 
-      # we can port-forward to test endpoints or directly use NodePort.
-      # For simplicity, let's assume we can use port-forward to access the service:
-      
       - name: Get services
         run: kubectl get svc
 
-      # Port-forward the service to access it on localhost:
+      # Port-forward to access service locally
       - name: Port forward service
         run: kubectl port-forward svc/rickandmorty-rickandmorty 5010:80 &
       
-      # Wait a bit for port-forward to establish
       - name: Sleep
         run: sleep 10
 
-      # Step 6: Test the application endpoints
+      # Test endpoints
       - name: Test healthcheck endpoint
         run: curl -f http://localhost:5010/healthcheck
 
