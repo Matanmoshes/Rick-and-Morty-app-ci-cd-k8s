@@ -14,6 +14,8 @@ jobs:
         uses: medyagh/setup-minikube@latest
         with:
           driver: docker
+          memory: 4096
+          cpus: 2
 
       # Step 2: Install kubectl and helm
       - name: Install kubectl and helm
@@ -29,6 +31,17 @@ jobs:
       # Adjust the chart path if needed.
       - name: Helm install application
         run: helm install rickandmorty ./helm/rickandmorty --set ingress.enabled=false --wait --timeout 300s
+      - name: Debug Pods
+        if: failure()
+        run: |
+            echo "===== PODS ====="
+            kubectl get pods -o wide
+            for p in $(kubectl get pods -o jsonpath='{.items[*].metadata.name}'); do
+              echo "===== DESCRIBE POD: $p ====="
+              kubectl describe pod $p
+              echo "===== LOGS POD: $p ====="
+              kubectl logs $p || true
+            done
 
       # Step 4: List services (for debugging)
       - name: Get services
