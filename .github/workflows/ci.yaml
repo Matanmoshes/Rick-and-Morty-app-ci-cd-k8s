@@ -9,7 +9,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 1: Set up a Minikube cluster on the runner
       - name: Setup Minikube
         uses: medyagh/setup-minikube@latest
         with:
@@ -17,11 +16,9 @@ jobs:
           memory: 4096
           cpus: 2
 
-      # Step 2: Enable Minikube ingress addon
       - name: Enable Minikube Ingress
         run: minikube addons enable ingress
 
-      # Step 3: Install kubectl and helm
       - name: Install kubectl and helm
         uses: yokawasa/action-setup-kube-tools@v0.11.2
         with:
@@ -31,27 +28,40 @@ jobs:
           kubectl: '1.25.0'
           helm: '3.11.1'
 
-      # Step 4: Deploy the Helm chart with ingress enabled
+      - name: Wait for Ingress Controller
+        run: |
+          kubectl wait --namespace ingress-nginx \
+            --for=condition=ready pod \
+            --selector=app.kubernetes.io/component=controller \
+            --timeout=300s
+
+          # Wait for any admission-related jobs if they exist
+          if kubectl get job -n ingress-nginx | grep ingress-nginx-admission; then
+            for job in $(kubectl get jobs -n ingress-nginx -o jsonpath='{.items[*].metadata.name}' | grep admission); do
+              kubectl wait --for=condition=complete job/$job -n ingress-nginx --timeout=300s
+            done
+          fi
+
+          sleep 20
+
       - name: Helm install application
         run: helm install rickandmorty ./helm/rickandmorty --set ingress.enabled=true --wait --timeout 300s
-      
-      - name: Debug Pods
+
+      - name: Debug Pods (if failure)
         if: failure()
         run: |
-            echo "===== PODS ====="
-            kubectl get pods -o wide
-            for p in $(kubectl get pods -o jsonpath='{.items[*].metadata.name}'); do
-              echo "===== DESCRIBE POD: $p ====="
-              kubectl describe pod $p
-              echo "===== LOGS POD: $p ====="
-              kubectl logs $p || true
-            done
+          echo "===== PODS ====="
+          kubectl get pods -o wide
+          for p in $(kubectl get pods -o jsonpath='{.items[*].metadata.name}'); do
+            echo "===== DESCRIBE POD: $p ====="
+            kubectl describe pod $p
+            echo "===== LOGS POD: $p ====="
+            kubectl logs $p || true
+          done
 
-      # Step 5: List services (for debugging)
       - name: Get services
         run: kubectl get svc --all-namespaces
 
-      # Step 6: Test the endpoints
       - name: Test healthcheck endpoint
         run: curl -f http://localhost/healthcheck
 
