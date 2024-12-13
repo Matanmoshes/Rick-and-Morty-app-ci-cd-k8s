@@ -43,32 +43,26 @@ jobs:
 
           sleep 20
 
-      - name: Helm install application
-        run: helm install rickandmorty ./helm/rickandmorty --set ingress.enabled=true #--wait --timeout 900s
-
-      - name: Debug Pods (if failure)
-        if: failure()
+          - name: Helm install application
+          run: helm install rickandmorty ./helm/rickandmorty --set ingress.enabled=true --wait --timeout 900s
+  
+      - name: Wait for Pods to be Ready
         run: |
-          echo "===== PODS ====="
-          kubectl get pods -o wide
-          for p in $(kubectl get pods -o jsonpath='{.items[*].metadata.name}'); do
-            echo "===== DESCRIBE POD: $p ====="
-            kubectl describe pod $p
-            echo "===== LOGS POD: $p ====="
-            kubectl logs $p || true
-          done
-
+          kubectl wait --for=condition=ready pod -l app=rickandmorty --timeout=300s
+          # Or check actual labels set by your chart
+  
       - name: Get services
         run: kubectl get svc --all-namespaces
-
+  
       - name: Port forward service
         run: kubectl port-forward svc/rickandmorty-rickandmorty 5010:80 &
-
+  
       - name: Sleep
         run: sleep 10
-
+  
       - name: Test healthcheck endpoint
         run: curl -f http://localhost:5010/healthcheck
-
+  
       - name: Test characters endpoint
         run: curl -f http://localhost:5010/characters
+  
