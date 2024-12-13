@@ -45,7 +45,7 @@ jobs:
           sleep 20
 
       - name: Helm install application
-        run: helm install rickandmorty ./helm/rickandmorty --set ingress.enabled=true --wait --timeout 300s
+        run: helm install rickandmorty ./helm/rickandmorty --set ingress.enabled=true #--wait --timeout 300s
 
       - name: Debug Pods (if failure)
         if: failure()
