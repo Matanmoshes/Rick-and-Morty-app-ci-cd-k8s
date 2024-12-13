@@ -35,7 +35,6 @@ jobs:
             --selector=app.kubernetes.io/component=controller \
             --timeout=300s
 
-          # Wait for any admission-related jobs if they exist
           if kubectl get job -n ingress-nginx | grep ingress-nginx-admission; then
             for job in $(kubectl get jobs -n ingress-nginx -o jsonpath='{.items[*].metadata.name}' | grep admission); do
               kubectl wait --for=condition=complete job/$job -n ingress-nginx --timeout=300s
@@ -45,7 +44,7 @@ jobs:
           sleep 20
 
       - name: Helm install application
-        run: helm install rickandmorty ./helm/rickandmorty --set ingress.enabled=true --wait --timeout 900s
+        run: helm install rickandmorty ./helm/rickandmorty --set ingress.enabled=true #--wait --timeout 900s
 
       - name: Debug Pods (if failure)
         if: failure()
@@ -62,8 +61,14 @@ jobs:
       - name: Get services
         run: kubectl get svc --all-namespaces
 
+      - name: Port forward service
+        run: kubectl port-forward svc/rickandmorty-rickandmorty 5010:80 &
+
+      - name: Sleep
+        run: sleep 10
+
       - name: Test healthcheck endpoint
-        run: curl -f http://localhost/healthcheck
+        run: curl -f http://localhost:5010/healthcheck
 
       - name: Test characters endpoint
-        run: curl -f http://localhost/characters
+        run: curl -f http://localhost:5010/characters
