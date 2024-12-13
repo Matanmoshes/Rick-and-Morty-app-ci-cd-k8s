@@ -1,96 +1,50 @@
-name: Test Helm Chart Deployment
+name: CI
 
 on: [push, pull_request]
 
 jobs:
-  test-deployment:
+  build-and-test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out code
-        uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      # Step 1: Set up Kubernetes cluster using Kind
-      - name: Set up Kind cluster
-        uses: helm/kind-action@v1.4.0
+      # Step 1: Set up a Minikube cluster on the runner
+      - name: Setup minikube
+        uses: medyagh/setup-minikube@latest
         with:
-          cluster_name: test-cluster
-          wait: true
+          driver: docker
 
-      # Step 2: Install kubectl
-      - name: Install kubectl
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
-          kubectl version --client
+      # Step 2: Install kubectl and helm
+      - name: Install kubectl and helm
+        uses: yokawasa/action-setup-kube-tools@v0.11.2
+        with:
+          setup-tools: |
+            kubectl
+            helm
+          kubectl: '1.25.0'
+          helm: '3.11.1'
 
-      # Step 3: Install Helm
-      - name: Install Helm
-        run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-          helm version
+      # Step 3: Deploy the Helm chart with ingress disabled
+      # Adjust the chart path if needed.
+      - name: Helm install application
+        run: helm install rickandmorty ./helm/rickandmorty --set ingress.enabled=false --wait --timeout 300s
 
-      # Step 4: Build or Pull the Docker image (if necessary)
-      # If you are using a pre-built image from a registry (like DockerHub or GHCR),
-      # you can skip building. If you need to build it first:
-      # NOTE: This is optional depending on your workflow.
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # Step 4: List services (for debugging)
+      - name: Get services
+        run: kubectl get svc --all-namespaces
 
-      - name: Login to Docker registry (optional)
-        if: secrets.DOCKER_USERNAME && secrets.DOCKER_PASSWORD
-        run: |
-          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-          
-      # Adjust image name and tag as needed.
-      - name: Build and push Docker image (optional)
-        run: |
-          docker build -t myorg/rickandmorty:latest ./rest_app
-          docker push myorg/rickandmorty:latest
+      # Step 5: Port-forward the service to test locally
+      # Assume the service is named 'rickandmorty-rickandmorty' and port 80 maps to 5010 in the pod
+      - name: Port forward service
+        run: kubectl port-forward svc/rickandmorty-rickandmorty 5010:80 &
 
-      # Step 5: Update Helm values if needed
-      # If your chart's values.yaml expects an image location, you can override it like this:
-      - name: Deploy Helm Chart
-        run: |
-          # Ensure that the cluster is reachable
-          kubectl cluster-info
-          # Deploy the chart
-          helm upgrade --install rickandmorty ./helm/rickandmorty \
-            --set image.repository=myorg/rickandmorty \
-            --set image.tag=latest \
-            --wait --timeout 120s
+      - name: Sleep
+        run: sleep 10
 
-      # Step 6: Check deployment status
-      - name: Wait for Pods to be ready
-        run: |
-          # Wait until pods are running
-          kubectl rollout status deployment/rickandmorty-rickandmorty --timeout=120s
+      # Step 6: Test the endpoints
+      - name: Test healthcheck endpoint
+        run: curl -f http://localhost:5010/healthcheck
 
-      # Step 7: Testing the application
-      # If you have a service running on port 80 and you used an Ingress, you have two main options:
-      # A) Directly test via port-forward:
-      # Forward from the deployment/service to localhost and curl it.
-      - name: Port-forward and test endpoints
-        run: |
-          # Port forward to the service
-          kubectl port-forward svc/rickandmorty-rickandmorty 8080:80 &
-          # Give it a couple seconds to start
-          sleep 5
-          # Test the health endpoint
-          curl -f http://localhost:8080/healthcheck
-          # Optionally test other endpoints
-          curl -f http://localhost:8080/characters
-          # If no errors, the test passes
-
-      # If you rely on ingress, you would need to run a job that sets up an ingress controller inside Kind.
-      # For simplicity, the above port-forward approach works well for CI testing.
-
-      # Step 8: Upload test results or logs (optional)
-      # You could print logs to help debug issues if the deployment fails.
-      - name: Show logs if test fails
-        if: failure()
-        run: |
-          kubectl describe pods
-          kubectl logs deployment/rickandmorty-rickandmorty
-
+      - name: Test characters endpoint
+        run: curl -f http://localhost:5010/characters
