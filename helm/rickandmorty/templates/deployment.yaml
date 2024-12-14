@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "rickandmorty.fullname" . }}
-  namespace: rick_and_morty
+  namespace: rick-and-morty
   labels:
     app: {{ include "rickandmorty.name" . }}
 spec:

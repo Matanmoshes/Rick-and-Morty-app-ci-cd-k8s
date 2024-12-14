@@ -3,7 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "rickandmorty.fullname" . }}
-  namespace: rick_and_morty
+  namespace: rick-and-morty
   labels:
     app: {{ include "rickandmorty.name" . }}
   annotations:
