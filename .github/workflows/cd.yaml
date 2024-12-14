@@ -55,9 +55,11 @@ jobs:
           kubectl wait --for=condition=ready pod -l app=rickandmorty --timeout=300s
           # Or check actual labels set by your chart
   
-      - name: Get services
-        run: kubectl get svc --all-namespaces
-  
+      - name: Get pods and services
+        run: |
+          kubectl get pods -A
+          kubectl get svc --all-namespaces
+          
       - name: Port forward service
         run: kubectl port-forward svc/rickandmorty-rickandmorty 5050:80 &
 
