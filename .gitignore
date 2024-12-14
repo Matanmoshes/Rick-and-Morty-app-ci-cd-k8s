@@ -7,6 +7,9 @@ __pycache__/
 venv/
 ENV/
 env/
+rick_and_morty_rest_app/venv
+rest_app/venv
+local_app/venv
 
 # System files
 .DS_Store
