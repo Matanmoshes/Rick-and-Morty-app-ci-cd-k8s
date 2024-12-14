@@ -61,7 +61,7 @@ jobs:
           kubectl get svc --all-namespaces
           
       - name: Port forward service
-        run: kubectl port-forward svc/rickandmorty-rickandmorty 5010:80 &
+        run: kubectl port-forward -n rick-and-morty svc/rickandmorty-rickandmorty 5010:80 &
 
       - name: Sleep
         run: sleep 10
