@@ -59,7 +59,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: rick_and_morty_rest_app
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:${{ env.VERSION }}
