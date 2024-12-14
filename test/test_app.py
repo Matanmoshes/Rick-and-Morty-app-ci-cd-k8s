@@ -33,6 +33,10 @@ def test_characters_data_mocked_response(client, monkeypatch):
                 ]
             }
 
+        def raise_for_status(self):
+            # Since status_code is always 200 in the mock, no action needed.
+            pass
+
     def mock_requests_get(*args, **kwargs):
         return MockAPIResponse()
 
