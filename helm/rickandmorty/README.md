@@ -1,14 +1,18 @@
 ## Helm Chart Structure
+
 ```
-helm/
-  rickandmorty/
-    Chart.yaml
-    values.yaml
-    templates/
-      _helpers.tpl
-      deployment.yaml
-      service.yaml
-      ingress.yaml
+├── helm
+│   └── rickandmorty
+│       ├── Chart.yaml
+│       ├── README.md
+│       ├── templates
+│       │   ├── _helpers.tpl
+│       │   ├── deployment.yaml
+│       │   ├── ingress.yaml
+│       │   ├── namespace.yaml
+│       │   └── service.yaml
+│       └── values.yaml
+
 ```
 
 ## How to Run
