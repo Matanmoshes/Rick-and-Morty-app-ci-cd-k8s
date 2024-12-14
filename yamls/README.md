@@ -1,5 +1,3 @@
-### README.md
-
 # Rick & Morty Kubernetes Deployment
 
 ## Overview
