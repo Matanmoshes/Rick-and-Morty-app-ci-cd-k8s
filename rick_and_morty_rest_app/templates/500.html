@@ -2,87 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oops! Server Error (500)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Server Error (500)</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(45deg, #ff6b6b, #f7d794, #4facfe);
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #f72585, #b5179e, #7209b7, #3a0ca3);
             background-size: 300% 300%;
-            animation: gradientAnimation 6s ease infinite;
+            animation: gradientShift 5s infinite ease;
             color: #fff;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             height: 100vh;
-            overflow: hidden;
+            margin: 0;
             text-align: center;
         }
-        @keyframes gradientAnimation {
+        @keyframes gradientShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        .container {
-            max-width: 600px;
+        .content {
+            background: rgba(0,0,0,0.3);
             padding: 30px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
             border-radius: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            position: relative;
+            width: 80%;
+            max-width: 500px;
+            animation: fadeIn 1s ease-in;
+        }
+        @keyframes fadeIn {
+            from {opacity:0; transform:scale(0.9);}
+            to {opacity:1; transform:scale(1);}
         }
         h1 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 4em;
+            font-size: 3em;
             margin: 0;
-            color: #f1f1f1;
         }
         p {
             font-size: 1.2em;
-            color: #f9f9f9;
             margin-top: 10px;
+            margin-bottom: 20px;
         }
-        .button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 15px 30px;
-            font-size: 1em;
-            color: #333;
-            background-color: #f7d794;
-            border: none;
+        .retry-button {
+            background: #fbc02d;
+            color: #000;
+            padding: 15px 25px;
             border-radius: 25px;
-            cursor: pointer;
             text-decoration: none;
-            transition: all 0.3s ease;
+            font-weight: bold;
+            transition: all 0.3s;
         }
-        .button:hover {
-            background-color: #ffd56b;
-        }
-        .funny-character {
-            position: absolute;
-            bottom: 600px;
-            left: 42%;
-            width: 305px;
-            height: 200px;
-            background: url('https://media1.tenor.com/m/9q0QJyEmAoYAAAAd/burn-hell.gif') no-repeat center center;
-            background-size: contain;
-            animation: float 0s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+        .retry-button:hover {
+            background: #ffd54f;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="content">
         <h1>500</h1>
-        <p>Oops! Something went wrong on our end. Please try again later.</p>
-        <a href="/" class="button">Go Back Home</a>
+        <p>Something went haywire on our side. Please try coming back later.</p>
+        <a href="/" class="retry-button">Return to Home</a>
     </div>
-    <div class="funny-character"></div>
 </body>
 </html>

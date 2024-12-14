@@ -5,132 +5,128 @@ import os
 import datetime
 import logging
 
-# Flask application instance
 app = Flask(__name__)
 
-# Logger setup
+# Configure logging for the application
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(levelname)s: %(message)s',
     handlers=[logging.StreamHandler()]
 )
 
-# Application constants
-BASE_URL = 'https://rickandmortyapi.com/api/character/'
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CSV_FILE = os.path.join(BASE_DIR, 'characters.csv')
+# Constants for external resources and file paths
+CHAR_API_BASE = 'https://rickandmortyapi.com/api/character/'
+WORKING_DIR = os.path.dirname(os.path.abspath(__file__))
+CHAR_CSV = os.path.join(WORKING_DIR, 'characters.csv')
 
-# Health check log
-healthchecks = []
+# Health checks log buffer
+health_records = []
 
-# Utility functions
-def log_status(status, message, status_code):
-    """Logs health check status and appends it to the healthchecks list."""
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    entry = {
-        'Status': status,
-        'Message': message,
-        'Status code': status_code,
-        'Timestamp': timestamp
+def record_status(state, detail, code):
+    """Record application health or error status."""
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_entry = {
+        'State': state,
+        'Detail': detail,
+        'Code': code,
+        'Time': now
     }
-    healthchecks.append(entry)
-    logging.info(f"{status} - {message} ({status_code})")
+    health_records.append(log_entry)
+    logging.info(f"{state} - {detail} ({code})")
 
-def save_results_to_csv(results):
-    """Saves character data to a CSV file."""
+def write_csv(character_data):
+    """Write character info to a CSV file."""
     try:
-        with open(CSV_FILE, 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['Name', 'Location', 'Image']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        with open(CHAR_CSV, 'w', newline='', encoding='utf-8') as csvfile:
+            headers = ['Name', 'Location', 'Image']
+            writer = csv.DictWriter(csvfile, fieldnames=headers)
             writer.writeheader()
-            writer.writerows(results)
-    except Exception as e:
-        log_status("ERROR", f"Failed to save results to CSV: {e}", 500)
+            writer.writerows(character_data)
+    except Exception as err:
+        record_status("ERROR", f"Unable to save CSV: {err}", 500)
         abort(500)
 
-def api_health_check():
-    """Performs a health check for the external API."""
+def check_api_health():
+    """Check availability of the external Rick and Morty API."""
     try:
-        response = requests.get(BASE_URL, timeout=5)
-        if response.status_code == 200:
-            log_status("PASSED", "API healthcheck passed successfully.", 200)
+        resp = requests.get(CHAR_API_BASE, timeout=5)
+        if resp.status_code == 200:
+            record_status("OK", "External API is responsive.", 200)
         else:
-            log_status("ERROR", f"API healthcheck failed. URL: {BASE_URL}", response.status_code)
+            record_status("ERROR", f"External API issue at {CHAR_API_BASE}", resp.status_code)
             abort(500)
-    except requests.RequestException as e:
-        log_status("ERROR", f"API healthcheck request error: {e}", 500)
+    except requests.RequestException as err:
+        record_status("ERROR", f"API request error: {err}", 500)
         abort(500)
 
-def fetch_characters():
-    """Fetches character data from the external API."""
-    api_health_check()
-    results = []
-    url = BASE_URL
-    params = {'species': 'Human', 'status': 'Alive'}
+def retrieve_characters():
+    """Retrieve all human, alive characters originating from an Earth variant."""
+    check_api_health()
+    outcome = []
+    next_url = CHAR_API_BASE
+    query_params = {'species': 'Human', 'status': 'Alive'}
 
     try:
-        while url:
-            response = requests.get(url, params=params, timeout=10)
-            response.raise_for_status()
-            data = response.json()
+        while next_url:
+            r = requests.get(next_url, params=query_params, timeout=10)
+            r.raise_for_status()
+            info = r.json()
 
-            for character in data.get('results', []):
-                if 'Earth' in character['location']['name']:
-                    results.append({
-                        'Name': character['name'],
-                        'Location': character['location']['name'],
-                        'Image': character['image']
+            for char in info.get('results', []):
+                if 'Earth' in char['location']['name']:
+                    outcome.append({
+                        'Name': char['name'],
+                        'Location': char['location']['name'],
+                        'Image': char['image']
                     })
             
-            url = data.get('info', {}).get('next')
-            params = None  # Clear params after the first request
-    except requests.RequestException as e:
-        log_status("ERROR", f"Error fetching characters: {e}", 500)
+            next_url = info.get('info', {}).get('next')
+            query_params = None
+    except requests.RequestException as err:
+        record_status("ERROR", f"Character retrieval failed: {err}", 500)
         abort(500)
 
-    return results
+    return outcome
 
-# Routes
 @app.route('/characters', methods=['GET'])
-def display_characters():
-    """Displays characters in an HTML template."""
-    characters = fetch_characters()
-    log_status("PASSED", "Characters page rendered successfully", 200)
-    return render_template('characters.html', characters=characters)
+def show_characters():
+    """Render a page displaying character data."""
+    chars = retrieve_characters()
+    record_status("OK", "/characters rendered successfully", 200)
+    return render_template('characters.html', characters=chars)
 
 @app.route('/download', methods=['GET'])
-def download_characters():
-    """Downloads character data as a CSV file."""
-    characters = fetch_characters()
-    save_results_to_csv(characters)
-    return send_file(CSV_FILE, as_attachment=True, download_name='characters.csv')
+def download_csv():
+    """Download the character data in CSV format."""
+    chars = retrieve_characters()
+    write_csv(chars)
+    return send_file(CHAR_CSV, as_attachment=True, download_name='characters.csv')
 
 @app.route('/healthcheck', methods=['GET'])
-def health_check():
-    """Returns the health check logs."""
+def healthcheck():
+    """Respond with overall health status of the service."""
     return jsonify({"status": "OK"}), 200
 
 @app.route('/characters_data', methods=['GET'])
-def characters_data():
-    """Returns character data as JSON."""
-    characters = fetch_characters()
-    return jsonify(characters), 200
+def chars_json():
+    """Return character data as JSON."""
+    chars = retrieve_characters()
+    return jsonify(chars), 200
 
 @app.route('/')
-def home():
-    """Renders the home page."""
+def root():
+    """Render the main index page."""
     return render_template('index.html'), 200
 
 @app.errorhandler(404)
-def handle_not_found(error):
-    """Handles 404 errors."""
+def not_found(e):
+    """Handle 404 errors by showing a custom page."""
     return render_template("404.html"), 404
 
 @app.errorhandler(500)
-def handle_internal_error(error):
-    """Handles 500 errors."""
+def internal_error(e):
+    """Handle unexpected server errors with a custom page."""
     return render_template('500.html'), 500
 
-# Entry point
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5010, debug=True)
