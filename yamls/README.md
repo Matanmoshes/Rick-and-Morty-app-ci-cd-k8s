@@ -114,6 +114,9 @@ yamls
    rickandmorty-deployment-xxxxx           1/1     Running   0          1m
    rickandmorty-deployment-yyyyy           1/1     Running   0          1m
    ```
+![Screenshot 2024-12-14 at 21 46 13](https://github.com/user-attachments/assets/ae1f08c1-81e6-4104-a2cd-455db86459dd)
+
+
 
    Verify the service:
    ```bash
@@ -124,6 +127,8 @@ yamls
    NAME                    TYPE           CLUSTER-IP      EXTERNAL-IP       PORT(S)        AGE
    rickandmorty-service    LoadBalancer   10.96.101.120   10.0.1.200        80:32123/TCP   1m
    ```
+![Screenshot 2024-12-14 at 21 46 33](https://github.com/user-attachments/assets/a9848c69-2d57-4add-ba75-e9ca0b5de1da)
+
 
    Check the ingress:
    ```bash
@@ -134,6 +139,8 @@ yamls
    NAME                  CLASS   HOSTS             ADDRESS       PORTS   AGE
    rickandmorty-ingress  nginx   rickandmorty.local 10.0.1.200   80      1m
    ```
+
+![Screenshot 2024-12-14 at 21 47 08](https://github.com/user-attachments/assets/4e479a92-eb69-4f3a-9487-533fd32aba11)
 
 ---
 
@@ -151,6 +158,8 @@ yamls
    - **Characters**: `http://rickandmorty.local/characters`
    - **Download CSV**: `http://rickandmorty.local/download`
    - **Health Check**: `http://rickandmorty.local/healthcheck`
+
+![Screenshot 2024-12-14 at 21 49 28](https://github.com/user-attachments/assets/2fda718b-34a7-46a0-a469-d1c800b0e12d)
 
 ---
 
@@ -184,8 +193,3 @@ kubectl delete -f ingress.yaml
 kubectl delete -f service.yaml
 kubectl delete -f deployment.yaml
 ```
-
----
-
-### Author
-Project by [Matan Moshe](https://github.com/Matanmoshes).
