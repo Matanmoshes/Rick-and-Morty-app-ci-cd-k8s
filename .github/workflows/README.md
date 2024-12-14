@@ -1,8 +1,8 @@
 # Rick and Morty App CI/CD Pipeline
 
-This repository implements a Continuous Integration (CI) and Continuous Deployment (CD) pipeline using GitHub Actions, Helm, and Minikube. The pipeline ensures that code changes are automatically tested and validated, and subsequently deployed to a local Kubernetes cluster for verification.
----
 ## Overview
+
+This repository implements a Continuous Integration (CI) and Continuous Deployment (CD) pipeline using GitHub Actions, Helm, and Minikube. The pipeline ensures that code changes are automatically tested and validated, and subsequently deployed to a local Kubernetes cluster for verification.
 
 The pipeline consists of two primary workflows:
 
@@ -119,5 +119,10 @@ If these steps pass, it confirms that the application was successfully deployed 
 ---
 ## Screenshots
 
+![Screenshot 2024-12-14 at 21 01 30](https://github.com/user-attachments/assets/9e32dfa4-ef6b-4015-b093-e7b0cdd41780)
+
+![Screenshot 2024-12-14 at 21 02 32](https://github.com/user-attachments/assets/14f576c1-c73c-4810-97a3-952b9f61b153)
+
+![Screenshot 2024-12-14 at 21 03 41](https://github.com/user-attachments/assets/26066544-7504-4257-bbad-2cd9f917842d)
 
 
