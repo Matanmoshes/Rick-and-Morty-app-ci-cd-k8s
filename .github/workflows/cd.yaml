@@ -52,7 +52,7 @@ jobs:
     
       - name: Wait for Pods to be Ready
         run: |
-          kubectl wait --for=condition=ready pod -l app=rickandmorty --timeout=300s
+          kubectl wait --for=condition=ready pod -l app=rickandmorty -n rick-and-morty --timeout=300s
           # Or check actual labels set by your chart
   
       - name: Get pods and services
