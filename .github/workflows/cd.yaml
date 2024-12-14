@@ -57,7 +57,7 @@ jobs:
   
       - name: Get pods and services
         run: |
-          kubectl get pods -A
+          kubectl get pods -n rick_and_morty
           kubectl get svc --all-namespaces
           
       - name: Port forward service
