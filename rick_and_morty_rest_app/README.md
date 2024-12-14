@@ -63,6 +63,8 @@ The app will now be accessible at `http://localhost:5010`.
 - **Method**: `GET`
 - **Description**: Displays the home page with links to the available features.
 
+![Screenshot 2024-12-14 at 21 11 32](https://github.com/user-attachments/assets/6927e47e-0ccb-4c69-936e-f3c37af62ec7)
+
 ---
 
 ### **2. Service Health Check**
@@ -76,6 +78,8 @@ The app will now be accessible at `http://localhost:5010`.
     }
     ```
 
+![Screenshot 2024-12-14 at 21 11 48](https://github.com/user-attachments/assets/0693962c-ab01-403c-a2d5-76e0feb245c8)
+
 ---
 
 ### **3. View Characters**
@@ -83,12 +87,16 @@ The app will now be accessible at `http://localhost:5010`.
 - **Method**: `GET`
 - **Description**: Displays a list of characters in a visually styled HTML page.
 
+![Screenshot 2024-12-14 at 21 12 00](https://github.com/user-attachments/assets/dd0533d8-9f26-4541-8f8b-3df61de1423b)
+
 ---
 
 ### **4. Download CSV**
 - **URL**: `/download`
 - **Method**: `GET`
 - **Description**: Downloads a CSV file containing character data.
+
+![Screenshot 2024-12-14 at 21 14 03](https://github.com/user-attachments/assets/6785f7e0-63c8-447f-b411-de22f2c13724)
 
 ---
 
@@ -111,6 +119,7 @@ The app will now be accessible at `http://localhost:5010`.
         }
     ]
     ```
+![Screenshot 2024-12-14 at 21 13 20](https://github.com/user-attachments/assets/5dbff8ea-0d95-4d27-a554-78615706cc6d)
 
 ---
 
@@ -126,8 +135,3 @@ To programmatically fetch data from the API, you can use `curl` or a tool like P
    ```bash
    curl -O http://localhost:5010/download
    ```
-
----
-
-## Author
-Project by [Matan Moshe](https://github.com/Matanmoshes/Rick-and-Morty-app-ci-cd-k8s).
