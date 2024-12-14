@@ -14,7 +14,7 @@ RUN pip install --upgrade pip
 RUN echo ${BUILD_NUMBER} && pip install --no-cache-dir -r requirements.txt
 
 # Expose the application port
-EXPOSE 5050
+EXPOSE 5010
 
 # Set build arguments and environment variables
 ARG BUILD_NUMBER
