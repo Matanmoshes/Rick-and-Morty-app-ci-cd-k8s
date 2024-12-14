@@ -61,16 +61,16 @@ jobs:
           kubectl get svc --all-namespaces
           
       - name: Port forward service
-        run: kubectl port-forward svc/rickandmorty-rickandmorty 5050:80 &
+        run: kubectl port-forward svc/rickandmorty-rickandmorty 5010:80 &
 
       - name: Sleep
         run: sleep 10
       
       - name: Test characters endpoint
-        run: curl -f http://localhost:5050/characters_data
+        run: curl -f http://localhost:5010/characters_data
     
       - name: Sleep
         run: sleep 10
   
       - name: Test healthcheck endpoint
-        run: curl -f http://localhost:5050/healthcheck
+        run: curl -f http://localhost:5010/healthcheck
