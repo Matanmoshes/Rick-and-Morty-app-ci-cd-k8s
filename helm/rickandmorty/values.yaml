@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: matanm66/rickandmorty
-  tag: v1.0
+  tag: latest
   pullPolicy: IfNotPresent
 
 service:
