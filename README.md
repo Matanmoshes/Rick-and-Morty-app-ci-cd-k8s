@@ -1,10 +1,12 @@
 # Rick and Morty App
 
 ## Description 
-This project is devide to four section
-1. Rick and Morty Rest API app
-2. Running the app on K8S
-3. Helm chart for the Rick and Morty app
+This project is devide to five section
+1. Rick and Morty local app
+2. Rick and Morty Rest API app
+3. Running the app on K8S
+4. Helm chart for the Rick and Morty app & running on k8s cluster
+5. Complete CI/CD pipline that test the app and deploy it on local minikube cluster
 
 ---
 
