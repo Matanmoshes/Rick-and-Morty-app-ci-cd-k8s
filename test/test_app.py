@@ -1,6 +1,6 @@
 import pytest
 import requests
-from rick_and_morty_rest_app.app import app
+from app.rick_and_morty_rest_app import app
 
 @pytest.fixture
 def client():
