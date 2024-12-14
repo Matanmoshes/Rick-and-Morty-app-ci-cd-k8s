@@ -18,4 +18,5 @@ This project is a demonstration of deploying, managing, and testing a Flask-base
 5. **[Complete CI/CD Pipeline](https://github.com/Matanmoshes/Rick-and-Morty-app-ci-cd-k8s/tree/main/.github/workflows)**  
    Automates testing and deploying the application on a local Minikube cluster via GitHub Actions workflows.
 
-![download-1](https://github.com/user-attachments/assets/dffa7d68-8877-4966-8d74-bd5824cec7a2)
+
+![thumb-1920-606023](https://github.com/user-attachments/assets/8f0b9ec5-095a-481a-be40-1159526c4f8a)
