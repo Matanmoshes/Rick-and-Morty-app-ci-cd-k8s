@@ -26,8 +26,8 @@ jobs:
 
       - name: Run tests
         env:
-          PYTHONPATH: ./rick_and_morty_rest_app 
-        run: pytest test/
+          PYTHONPATH: .
+        run: pytest test/ --maxfail=1 --disable-warnings -v
 
   build_push:
     runs-on: ubuntu-latest
@@ -35,7 +35,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Load environment variables
         run: |
