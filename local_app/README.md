@@ -1,5 +1,3 @@
-### README.md
-
 # Rick and Morty Local App
 
 ## Overview
