@@ -40,11 +40,17 @@ The script is written in Python and performs the following steps:
 
 ## How to Run the Script
 1. Clone the repository or copy the script to your local machine.
+```bash
+git clone https://github.com/Matanmoshes/Rick-and-Morty-app-ci-cd-k8s.git
+```
 2. Navigate to the folder containing the script.
+```bash
+cd Rick-and-Morty-app-ci-cd-k8s
+```
 3. Run the script:
-   ```bash
-   python app.py
-   ```
+```bash
+python app.py
+```
 4. After running, the script will create a file named `characters.csv` in the same directory, containing the filtered data.
 
 ---
